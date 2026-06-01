@@ -1,0 +1,92 @@
+{
+  "name": "flux-chamber",
+  "version": "0.1.0",
+  "description": "Field-driven runtime for MANIFOLD — continuous-interaction substrate where state flows through material tensors instead of discrete components",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./bridge/hyperpoly": {
+      "types": "./dist/bridge/hyperpoly.d.ts",
+      "import": "./dist/bridge/hyperpoly.mjs",
+      "require": "./dist/bridge/hyperpoly.js"
+    },
+    "./bridge/three": {
+      "types": "./dist/bridge/three.d.ts",
+      "import": "./dist/bridge/three.mjs",
+      "require": "./dist/bridge/three.js"
+    },
+    "./bridge/canvas": {
+      "types": "./dist/bridge/canvas.d.ts",
+      "import": "./dist/bridge/canvas.mjs",
+      "require": "./dist/bridge/canvas.js"
+    },
+    "./bridge/webgpu": {
+      "types": "./dist/bridge/webgpu.d.ts",
+      "import": "./dist/bridge/webgpu.mjs",
+      "require": "./dist/bridge/webgpu.js"
+    },
+    "./examples": {
+      "types": "./dist/examples/index.d.ts",
+      "import": "./dist/examples/index.mjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "benchmark": "node dist/benchmark/index.js",
+    "lint": "biome check src/"
+  },
+  "keywords": [
+    "field-computation",
+    "manifold",
+    "runtime",
+    "webgpu",
+    "wgsl",
+    "continuity",
+    "procedural-generation",
+    "tensor",
+    "hyperpoly-terrain"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/COMMENCINGTHESCOURGE/flux-chamber.git"
+  },
+  "homepage": "https://github.com/COMMENCINGTHESCOURGE/hyperpoly-terrain",
+  "bugs": {
+    "url": "https://github.com/COMMENCINGTHESCOURGE/flux-chamber/issues"
+  },
+  "license": "MIT",
+  "author": "DaShawn McLaughlin / Guinea Pig Trench LLC",
+  "dependencies": {},
+  "optionalDependencies": {
+    "hyperpoly-terrain": "^2.0.0"
+  },
+  "peerDependencies": {
+    "three": "^0.160.0"
+  },
+  "peerDependenciesMeta": {
+    "three": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.5.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0",
+    "three": "^0.160.0"
+  }
+}
