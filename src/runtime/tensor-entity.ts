@@ -24,6 +24,9 @@ export class TensorEntity {
   /** Tensor channels — the entity's field footprint */
   channels: Tensor;
 
+  /** Position in the field (separate from gradient/flow direction) */
+  position: Vec3;
+
   /** Gradient direction (flow) of the entity through the field */
   gradient: Vec3;
 
@@ -43,6 +46,7 @@ export class TensorEntity {
     this.id = nextId();
     this.type = config.type ?? 'default';
     this.channels = { ...config.channels } as Tensor;
+    this.position = config.position ?? [0, 0, 0];
     this.gradient = config.gradient ?? [0, 0, 0];
     this.radius = config.radius ?? 16;
     this.mass = config.mass ?? 1.0;
@@ -83,10 +87,11 @@ export class TensorEntity {
 
   /**
    * Apply a gradient step: move the entity through the field.
+   * Updates position based on gradient direction.
    */
-  stepGradient(_dt: number): void {
+  stepGradient(dt: number): void {
     for (let i = 0; i < 3; i++) {
-      this.gradient[i] += 0; // gradient is set externally by field reading
+      this.position[i] += this.gradient[i] * dt;
     }
   }
 
@@ -109,6 +114,7 @@ export class TensorEntity {
       id: this.id,
       type: this.type,
       channels: { ...this.channels },
+      position: [...this.position],
       gradient: [...this.gradient],
       radius: this.radius,
       mass: this.mass,
@@ -122,6 +128,7 @@ export class TensorEntity {
     const entity = new TensorEntity({
       type: data.type as string,
       channels: data.channels as Record<string, number>,
+      position: data.position as Vec3,
       gradient: data.gradient as Vec3,
       radius: data.radius as number,
       mass: data.mass as number,

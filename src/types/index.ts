@@ -49,7 +49,7 @@ export interface VinculumConstraint {
   type: VinculumType;
   channels: string[];
   rate: number;
-  mode: 'reversible' | 'dissipative' | 'threshold' | 'conservation';
+  mode: 'reversible' | 'dissipative' | 'threshold' | 'conservation' | 'ratio';
   threshold?: number;
   /** Mod9 classification: STABLE (1,4,7), BREACH (0,3,6), NEUTRAL (2,5,8) */
   classification?: 'STABLE' | 'BREACH' | 'NEUTRAL';
