@@ -24,8 +24,14 @@ export class TensorEntity {
   /** Tensor channels — the entity's field footprint */
   channels: Tensor;
 
+  /** Position of the entity in world space */
+  position: Vec3;
+
   /** Gradient direction (flow) of the entity through the field */
   gradient: Vec3;
+
+  /** Velocity of the entity in world space */
+  velocity: Vec3;
 
   /** Radius of influence in the tensor field */
   radius: number;
@@ -43,7 +49,9 @@ export class TensorEntity {
     this.id = nextId();
     this.type = config.type ?? 'default';
     this.channels = { ...config.channels } as Tensor;
+    this.position = config.position ?? [0, 0, 0];
     this.gradient = config.gradient ?? [0, 0, 0];
+    this.velocity = [0, 0, 0];
     this.radius = config.radius ?? 16;
     this.mass = config.mass ?? 1.0;
     this.tags = new Set(config.tags ?? []);

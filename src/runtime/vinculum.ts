@@ -94,7 +94,7 @@ export class VinculumPipeline {
     entity: { get: (ch: string) => number; add: (ch: string, delta: number) => void },
     chA: string,
     chB: string,
-    _ratio: number,
+    ratio: number,
     rate: number,
     dt: number,
   ): void {
@@ -103,8 +103,9 @@ export class VinculumPipeline {
     const total = a + b;
     if (total === 0) return;
 
-    // Drift toward equilibrium: A = B
-    const target = total / 2;
+    // Use ratio/threshold constraint target: target A = total * targetRatio / (1 + targetRatio)
+    const targetRatio = ratio || 1.0;
+    const target = total * targetRatio / (1 + targetRatio);
     const deltaA = (target - a) * rate * dt;
 
     entity.add(chA, deltaA);

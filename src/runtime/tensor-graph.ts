@@ -107,10 +107,10 @@ export class TensorGraph {
    */
   sampleField(position: Vec3): Tensor {
     const result: Tensor = {};
-    const nearby = this.queryRadius(position, this.cellSize);
+    const nearby = this.queryRadius(position, this.cellSize * 2);
 
     for (const entity of nearby) {
-      const dist = this.distance(position, entity.gradient);
+      const dist = this.distance(position, entity.position ?? entity.gradient);
       if (dist > entity.radius) continue;
 
       // Distance-weighted contribution
@@ -130,10 +130,11 @@ export class TensorGraph {
    */
   sampleGradient(position: Vec3, channel: string, delta = 1): Vec3 {
     const base = this.sampleFieldAt(position, channel);
+    const step = delta || this.cellSize;
     const grad: Vec3 = [
-      this.sampleFieldAt([position[0] + delta, position[1], position[2]], channel) - base,
-      this.sampleFieldAt([position[0], position[1] + delta, position[2]], channel) - base,
-      this.sampleFieldAt([position[0], position[1], position[2] + delta], channel) - base,
+      this.sampleFieldAt([position[0] + step, position[1], position[2]], channel) - base,
+      this.sampleFieldAt([position[0], position[1] + step, position[2]], channel) - base,
+      this.sampleFieldAt([position[0], position[1], position[2] + step], channel) - base,
     ];
     return grad;
   }
@@ -161,7 +162,8 @@ export class TensorGraph {
     const dx = a[0] - b[0];
     const dy = a[1] - b[1];
     const dz = a[2] - b[2];
-    return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    return Number.isFinite(dist) ? dist : 0;
   }
 
   // ─── Spatial Indexing ──────────────────────────────────
@@ -175,7 +177,7 @@ export class TensorGraph {
   }
 
   private cellKey(entity: TensorEntity): string {
-    return `${this.positionToCell(entity.gradient)}`;
+    return `${this.positionToCell(entity.position ?? entity.gradient)}`;
   }
 
   private updateSpatialIndex(entity: TensorEntity): void {
@@ -197,6 +199,7 @@ export class TensorGraph {
         this.spatialGrid.set(key, filtered);
       }
     }
+    this.updateSpatialIndex(entity);
   }
 
   /** Update all spatial indices (call after position changes) */

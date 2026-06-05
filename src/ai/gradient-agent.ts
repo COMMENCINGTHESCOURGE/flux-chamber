@@ -80,6 +80,11 @@ export class GradientAgent {
     this.posY += direction[1] * actualStep;
     this.posZ += direction[2] * actualStep;
 
+    // Sync entity position so spatial queries follow the agent
+    entity.set('__sensor_x', this.posX);
+    entity.set('__sensor_y', this.posY);
+    entity.set('__sensor_z', this.posZ);
+
     // Update entity field footprint to reflect position
     entity.add(this.field, actualStep * magnitude * 0.01);
   }
