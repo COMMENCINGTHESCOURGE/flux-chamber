@@ -72,6 +72,33 @@ describe('FluxChamber', () => {
   it('is not running by default (animation loop is browser-only)', () => {
     expect(chamber.isRunning).toBe(false);
   });
+
+  it('loads declarations dynamically from JSON files', () => {
+    const fs = require('fs');
+    const path = require('path');
+    const tempDir = path.join(__dirname, 'temp-bonds');
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir);
+    }
+    const tempFile = path.join(tempDir, 'test-erosion.json');
+    const constraint = {
+      name: 'temp-erosion',
+      type: 'threshold',
+      channels: ['rock', 'sand'],
+      rate: 0.02,
+      mode: 'threshold',
+      threshold: 3.0,
+      classification: 'BREACH'
+    };
+    fs.writeFileSync(tempFile, JSON.stringify(constraint));
+
+    chamber.loadDeclarations(tempDir);
+    expect(chamber.vinculum.get('temp-erosion')).toBeDefined();
+
+    // Clean up
+    fs.unlinkSync(tempFile);
+    fs.rmdirSync(tempDir);
+  });
 });
 
 describe('TensorEntity', () => {

@@ -64,6 +64,26 @@ export class FluxChamber {
     return this.vinculum.remove(name);
   }
 
+  loadDeclarations(dirPath: string): void {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      if (fs.existsSync(dirPath)) {
+        const files = fs.readdirSync(dirPath);
+        for (const file of files) {
+          if (file.endsWith('.json')) {
+            const filePath = path.join(dirPath, file);
+            const content = fs.readFileSync(filePath, 'utf-8');
+            const decl = JSON.parse(content) as VinculumConstraint;
+            this.addConstraint(decl);
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to load declarations via fs:', e);
+    }
+  }
+
   // ─── Agents ──────────────────────────────────────
 
   attachAgent(agent: GradientAgent, entity: TensorEntity): void {
