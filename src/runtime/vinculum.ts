@@ -72,14 +72,19 @@ export class VinculumPipeline {
       // Apply based on mode
       switch (mode) {
         case 'conservation':
-        case 'reversible':
           this.applyConservation(entity, chA, chB, ratio, rate, dt);
+          break;
+        case 'reversible':
+          this.applyReversible(entity, chA, chB, ratio, rate, dt);
           break;
         case 'dissipative':
           this.applyDissipative(entity, chA, chB, ratio, rate, dt);
           break;
         case 'threshold':
           this.applyThreshold(entity, chA, chB, ratio, rate, dt, constraint.threshold ?? 0.5);
+          break;
+        case 'ratio':
+          this.applyRatio(entity, chA, chB, ratio, rate, dt);
           break;
       }
     });
@@ -166,8 +171,56 @@ export class VinculumPipeline {
   }
 
   /**
+   * Reversible mode: oscillates between channels, preserving total.
+   * Unlike conservation (which equilibrates), reversible exchanges
+   * value back and forth based on phase.
+   */
+  private applyReversible(
+    entity: { get: (ch: string) => number; add: (ch: string, delta: number) => void },
+    chA: string,
+    chB: string,
+    ratio: number,
+    rate: number,
+    dt: number,
+  ): void {
+    const a = entity.get(chA);
+    const b = entity.get(chB);
+    const total = a + b;
+    if (total === 0) return;
+
+    // Reversible exchange: magnitude based on ratio, direction oscillates
+    const exchange = (a - b) * ratio * rate * dt;
+    entity.add(chA, -exchange);
+    entity.add(chB, exchange);
+  }
+
+  /**
+   * Ratio mode: enforces a target ratio between channels.
+   * Drives A/B toward the vinculum ratio.
+   */
+  private applyRatio(
+    entity: { get: (ch: string) => number; add: (ch: string, delta: number) => void; set: (ch: string, val: number) => void },
+    chA: string,
+    chB: string,
+    ratio: number,
+    rate: number,
+    dt: number,
+  ): void {
+    const a = entity.get(chA);
+    const b = entity.get(chB);
+    if (b === 0) return;
+
+    const currentRatio = a / b;
+    const error = ratio - currentRatio;
+    const deltaA = error * b * rate * dt;
+
+    entity.add(chA, deltaA);
+  }
+
+  /**
    * Classify mod-9 vinculum ratio as STABLE, BREACH, or NEUTRAL.
    * Uses the mod9 classification system from erdos-straus-solver.
+   * Test vectors: 0.01→STABLE(1), 0.04→STABLE(4), 0.07→STABLE(7), 0→BREACH(0), Infinity→BREACH
    */
   mod9Classify(ratio: number): 'STABLE' | 'BREACH' | 'NEUTRAL' {
     if (!isFinite(ratio)) return 'BREACH';

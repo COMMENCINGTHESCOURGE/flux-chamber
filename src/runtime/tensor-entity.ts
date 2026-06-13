@@ -91,10 +91,11 @@ export class TensorEntity {
 
   /**
    * Apply a gradient step: move the entity through the field.
+   * Updates position based on gradient direction.
    */
-  stepGradient(_dt: number): void {
+  stepGradient(dt: number): void {
     for (let i = 0; i < 3; i++) {
-      this.gradient[i] += 0; // gradient is set externally by field reading
+      this.position[i] += this.gradient[i] * dt;
     }
   }
 
@@ -117,6 +118,7 @@ export class TensorEntity {
       id: this.id,
       type: this.type,
       channels: { ...this.channels },
+      position: [...this.position],
       gradient: [...this.gradient],
       radius: this.radius,
       mass: this.mass,
@@ -130,6 +132,7 @@ export class TensorEntity {
     const entity = new TensorEntity({
       type: data.type as string,
       channels: data.channels as Record<string, number>,
+      position: data.position as Vec3,
       gradient: data.gradient as Vec3,
       radius: data.radius as number,
       mass: data.mass as number,

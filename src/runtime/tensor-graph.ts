@@ -110,7 +110,7 @@ export class TensorGraph {
     const nearby = this.queryRadius(position, this.cellSize * 2);
 
     for (const entity of nearby) {
-      const dist = this.distance(position, entity.position ?? entity.gradient);
+      const dist = this.distance(position, entity.position);
       if (dist > entity.radius) continue;
 
       // Distance-weighted contribution
@@ -155,8 +155,7 @@ export class TensorGraph {
   }
 
   /**
-   * Compute the Euclidean distance between a position and a gradient vector.
-   * Used as a simple proximity measure.
+   * Compute the Euclidean distance between two positions.
    */
   private distance(a: Vec3, b: Vec3): number {
     const dx = a[0] - b[0];
@@ -177,7 +176,7 @@ export class TensorGraph {
   }
 
   private cellKey(entity: TensorEntity): string {
-    return `${this.positionToCell(entity.position ?? entity.gradient)}`;
+    return `${this.positionToCell(entity.position)}`;
   }
 
   private updateSpatialIndex(entity: TensorEntity): void {
