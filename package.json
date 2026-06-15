@@ -47,7 +47,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "benchmark": "node dist/benchmark/index.js",
-    "lint": "biome check src/"
+    "lint": "biome check src/",
+    "bootstrap-issues": "node scripts/bootstrap-issues.js"
   },
   "keywords": [
     "field-computation",
